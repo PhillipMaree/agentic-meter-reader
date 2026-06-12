@@ -124,11 +124,19 @@ def _insert_reading(
         """,
         [
             report.hash,
-            reading.meter_nr, reading.meter_type, reading.meter_reading,
+            reading.meter_nr,
+            reading.meter_type,
+            reading.meter_reading,
             reading.flow_lph,
-            reading.manufacturer, reading.model, reading.production_year,
-            reading.confidence, reading.notes, escalated,
-            report.apartment_nr, report.reporter_email, report.reported_at,
+            reading.manufacturer,
+            reading.model,
+            reading.production_year,
+            reading.confidence,
+            reading.notes,
+            escalated,
+            report.apartment_nr,
+            report.reporter_email,
+            report.reported_at,
         ],
     )
 

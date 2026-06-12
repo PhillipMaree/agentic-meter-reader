@@ -100,7 +100,9 @@ class Client:
             raise AuthError("Client used outside its context manager.")
         return self._service
 
-    def list_messages(self, query: str = "in:inbox", max_results: int = 10) -> list[dict]:
+    def list_messages(
+        self, query: str = "in:inbox", max_results: int = 10
+    ) -> list[dict]:
         """List message refs (id, threadId) matching a Gmail search query, newest first."""
         res = (
             self.service.users()
@@ -167,7 +169,10 @@ class Client:
             )
         raw = base64.urlsafe_b64encode(mime.as_bytes()).decode()
         return (
-            self.service.users().messages().send(userId="me", body={"raw": raw}).execute()
+            self.service.users()
+            .messages()
+            .send(userId="me", body={"raw": raw})
+            .execute()
         )
 
     def trash_thread(self, thread_id: str) -> None:
