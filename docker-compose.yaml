@@ -1,17 +1,44 @@
-# Creates the shared `mollebakken` database on the agentic-enterprise
-# platform stack (Postgres, LiteLLM, … run there). Idempotent — a no-op when
-# mollebakken-styret has already created the database.
+# Runs on the agentic-enterprise platform stack (Postgres, LiteLLM,
+# SeaweedFS, … live there):
+#   - mollebakken-db-init: creates the shared `mollebakken` database.
+#     Idempotent — a no-op when mollebakken-styret has already created it.
+#   - meter-pipeline: runs the inbox pipeline every 15 minutes (see compose/meter/start).
 
 services:
+
+  meter-pipeline:
+    image: agentic-meter-reader-meter-pipeline:latest
+    build:
+      context: .
+      dockerfile: ./compose/meter/Dockerfile
+    container_name: meter-pipeline
+    restart: unless-stopped
+    depends_on:
+      mollebakken-db-init:
+        condition: service_completed_successfully
+    environment:
+      # config.yaml points at host-mapped localhost ports; inside the platform
+      # network the services resolve by container name on their internal ports
+      - SQL__HOST=postgres
+      - SQL__PORT=5432
+      - S3__ENDPOINT=http://seaweedfs:8333
+      - GATEWAY__URL=http://litellm:4000
+    volumes:
+      - ./config:/app/config:ro
+      # writable: gmail.py rewrites token.json when the OAuth token refreshes
+      - ./.auth:/app/.auth
+    networks:
+      - platform
+
   mollebakken-db-init:
     image: postgres:latest
     # no fixed container_name: mollebakken-styret's stack runs a db-init
     # container under that name on the same network
     restart: "no"
     environment:
-      PGHOST: postgres
-      PGUSER: ${POSTGRES_USER:-postgres}
-      PGPASSWORD: ${POSTGRES_PASSWORD:-password}
+      - PGHOST=postgres
+      - PGUSER=${POSTGRES_USER:-postgres}
+      - PGPASSWORD=${POSTGRES_PASSWORD:-password}
     entrypoint:
       - sh
       - -c
@@ -25,7 +52,8 @@ services:
         done
         psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='mollebakken'" | grep -q 1 \
           || psql -d postgres -c "CREATE DATABASE mollebakken;"
-    networks: [platform]
+    networks:
+      - platform
 
 networks:
   platform:
