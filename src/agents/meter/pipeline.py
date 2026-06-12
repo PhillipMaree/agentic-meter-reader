@@ -99,8 +99,7 @@ def _image_attachments(message: dict) -> list[dict]:
     return [
         a
         for a in message["attachments"]
-        if a["attachment_id"]
-        and Path(a["filename"]).suffix.lower() in IMAGE_EXTENSIONS
+        if a["attachment_id"] and Path(a["filename"]).suffix.lower() in IMAGE_EXTENSIONS
     ]
 
 
