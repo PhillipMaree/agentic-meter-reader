@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+# run once at start, then every 15 minutes; the pipeline is one-shot and
+# idempotent (email-hash dedup), so an overlap-free fixed sleep is sufficient
+while :; do
+  .venv/bin/python -m src.agents.meter.pipeline || echo "pipeline run failed; retrying in 15min"
+  sleep 900
+done

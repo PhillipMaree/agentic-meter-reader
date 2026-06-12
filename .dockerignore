@@ -1,0 +1,10 @@
+.git/
+.venv/
+.auth/
+.env
+.pytest_cache/
+__pycache__/
+docs/
+tests/
+.vscode/
+.claude/
