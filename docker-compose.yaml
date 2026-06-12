@@ -1,0 +1,33 @@
+# Creates the shared `mollebakken` database on the agentic-enterprise
+# platform stack (Postgres, LiteLLM, … run there). Idempotent — a no-op when
+# mollebakken-styret has already created the database.
+
+services:
+  mollebakken-db-init:
+    image: postgres:latest
+    # no fixed container_name: mollebakken-styret's stack runs a db-init
+    # container under that name on the same network
+    restart: "no"
+    environment:
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-password}
+    entrypoint:
+      - sh
+      - -c
+      - |
+        # Wait for Postgres to be reachable — the platform stack may still be
+        # starting (or DNS may not yet resolve `postgres`) when we run.
+        for i in $$(seq 1 30); do
+          pg_isready -h postgres -U "$$PGUSER" && break
+          echo "waiting for postgres ($$i/30)…"
+          sleep 2
+        done
+        psql -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='mollebakken'" | grep -q 1 \
+          || psql -d postgres -c "CREATE DATABASE mollebakken;"
+    networks: [platform]
+
+networks:
+  platform:
+    external: true
+    name: ${PLATFORM_NETWORK:-agentic-enterprise_network_bridge}

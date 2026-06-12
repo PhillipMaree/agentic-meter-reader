@@ -1,0 +1,25 @@
+# Sender-email -> apartment fallback for triage, seeded from the owner table
+# in mollebakken-styret/README.md. L0 is hovedmåleren (building main meter,
+# reported by the board). L4/L7/L9 are owned by Velbygd Prosjekt AS Konkursbo
+# (DNB) and have no resident email.
+L0: []
+L1:
+  - haugneshilde@gmail.com
+  - skomaker.aalberg@ntebb.no
+L2:
+  - theakviteng@gmail.com
+  - ivar.skjevik@ntebb.no
+L3:
+  - phillip.maree@gmail.com
+L4: []
+L5:
+  - ollund.ol@gmail.com
+  - henningsgardvigdis@gmail.com
+L6:
+  - geir_anders@yahoo.com
+  - marie.lundbaek@gmail.com
+L7: []
+L8:
+  - erik_hoftun@hotmail.com
+  - gryho@hotmail.com
+L9: []

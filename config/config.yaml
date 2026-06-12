@@ -1,0 +1,32 @@
+mail:
+  account: mollebakken.36.vann@gmail.com
+  imap: imap.gmail.com
+  scope: https://mail.google.com/
+agents:
+  - name: meter
+    host: 0.0.0.0
+    port: 9999
+    version: 0.1.0
+    llm:
+      provider: anthropic
+      voter_model: claude-sonnet-4-6     # supports temperature for vote diversity
+      voter_temperature: 0.4
+      n_voters: 3
+      agreement_threshold: 1.0           # meter_nr, meter_type, reading must be unanimous
+      arbiter_model: claude-fable-5      # stronger model, used only on disagreement
+sql:
+  host: 127.0.0.1
+  port: 15432
+  user: postgres
+  password: password
+  name: mollebakken
+gateway:
+  url: http://localhost:14000
+  key: sk-dev-master-key-change-me-not-a-secret
+s3:
+  endpoint: http://localhost:18333
+  browser: http://localhost:18888
+  region: ""
+  bucket: mollebakken-styret    # shared project bucket; this agent's keys live under meter/
+  access_key: any
+  secret_key: any
